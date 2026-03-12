@@ -370,6 +370,9 @@
     background: #F0F0F0;
     border: 1px solid var(--border);
     aspect-ratio: 4/3;
+    display: block;
+    text-decoration: none;
+    color: inherit;
     cursor: none;
     transition: border-color 0.3s, transform 0.3s;
   }
@@ -384,6 +387,12 @@
     font-size: 6rem;
     color: rgba(255,255,255,0.15);
     transition: transform 0.5s;
+  }
+  .card-bg.cover-bg {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: transparent;
   }
   .work-card:hover .card-bg { transform: scale(1.04); }
   .c1 { background: linear-gradient(135deg,#3300FF,#6633ff); }
@@ -727,15 +736,15 @@
     <p>A selection of brand identities, logos, and visual systems crafted for real businesses.</p>
   </div>
   <div class="work-grid">
-    <div class="work-card reveal">
-      <div class="card-bg c1">ID</div>
+    <a class="work-card reveal" href="https://www.behance.net/gallery/232359371/Melted-A-Skincare-brand-(Brand-Book)" target="_blank" rel="noreferrer" aria-label="Open Melted - A Skincare brand (Brand Book) on Behance">
+      <div class="card-bg cover-bg" style="background-image:url('https://www.behance.net/gallery/232359371/Melted-A-Skincare-brand-(Brand-Book)/modules/1333150155')">MB</div>
       <div class="card-chip">Featured</div>
       <div class="card-num">01</div>
       <div class="card-info">
-        <div class="card-cat">Brand Identity</div>
-        <div class="card-title">Project Name Here</div>
+        <div class="card-cat">Branding</div>
+        <div class="card-title">Melted Brand Book</div>
       </div>
-    </div>
+    </a>
     <div class="work-card reveal">
       <div class="card-bg c2">LG</div>
       <div class="card-num">02</div>
