@@ -530,6 +530,14 @@
   }
 
   .contact-form { display: flex; flex-direction: column; gap: 14px; }
+  .form-status {
+    min-height: 1.2em;
+    font-size: 0.68rem;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+  .form-status.is-success { color: #0b7a28; }
+  .form-status.is-error { color: #b42318; }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .form-field label {
     display: block; font-size: 0.58rem; letter-spacing: 3px;
@@ -843,20 +851,20 @@
         </a>
       </div>
     </div>
-    <form class="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+    <form class="contact-form" id="contactForm" action="https://script.google.com/macros/s/AKfycby_juPWldxomnWY3QaqZ3q672uZs22j3LDRAgif3aaR5KH1AfbvllzjgMXhsrXS5OdC/exec" method="POST" target="hiddenFormTarget">
       <div class="form-row">
         <div class="form-field">
           <label>Your Name</label>
-          <input type="text" name="name" placeholder="Jane Smith">
+          <input type="text" name="fullName" placeholder="Jane Smith" required>
         </div>
         <div class="form-field">
           <label>Email</label>
-          <input type="email" name="email" placeholder="jane@example.com">
+          <input type="email" name="email" placeholder="jane@example.com" required>
         </div>
       </div>
       <div class="form-field">
         <label>Service Needed</label>
-        <select name="service">
+        <select name="serviceNeeded" required>
           <option>Brand Identity — from ₹50,000</option>
           <option>Logo Design — from ₹15,000</option>
           <option>Packaging Design — from ₹18,000</option>
@@ -866,10 +874,12 @@
       </div>
       <div class="form-field">
         <label>Tell Me About Your Project</label>
-        <textarea name="message" placeholder="Describe your brand, goals, timeline..."></textarea>
+        <textarea name="projectDetails" placeholder="Describe your brand, goals, timeline..." required></textarea>
       </div>
-      <button type="submit" class="btn-submit">Send Message →</button>
+      <div class="form-status" id="formStatus" aria-live="polite"></div>
+      <button type="submit" class="btn-submit" id="submitButton">Send Message →</button>
     </form>
+    <iframe id="hiddenFormTarget" name="hiddenFormTarget" title="Hidden form target" style="display:none"></iframe>
   </div>
 </div>
 
@@ -900,6 +910,54 @@
   reveals.forEach(r => new IntersectionObserver(entries => {
     entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
   }, {threshold:0.1}).observe(r));
+
+  const contactForm = document.getElementById('contactForm');
+  const formStatus = document.getElementById('formStatus');
+  const submitButton = document.getElementById('submitButton');
+  const hiddenFormTarget = document.getElementById('hiddenFormTarget');
+  let isSubmittingForm = false;
+  let submitTimeoutId = null;
+
+  if (contactForm) {
+    contactForm.addEventListener('submit', () => {
+      isSubmittingForm = true;
+      submitButton.disabled = true;
+      submitButton.textContent = 'Sending...';
+      formStatus.textContent = 'Submitting your message...';
+      formStatus.className = 'form-status';
+
+      if (submitTimeoutId) {
+        window.clearTimeout(submitTimeoutId);
+      }
+
+      submitTimeoutId = window.setTimeout(() => {
+        if (!isSubmittingForm) return;
+        isSubmittingForm = false;
+        formStatus.textContent = 'Submission may not have reached Google Sheets. Please check your Apps Script deployment.';
+        formStatus.className = 'form-status is-error';
+        submitButton.disabled = false;
+        submitButton.textContent = 'Send Message →';
+      }, 8000);
+    });
+  }
+
+  if (hiddenFormTarget) {
+    hiddenFormTarget.addEventListener('load', () => {
+      if (!isSubmittingForm) return;
+
+      isSubmittingForm = false;
+      if (submitTimeoutId) {
+        window.clearTimeout(submitTimeoutId);
+        submitTimeoutId = null;
+      }
+
+      contactForm.reset();
+      formStatus.textContent = 'Submission sent. Please check your Google Sheet for the new row.';
+      formStatus.className = 'form-status is-success';
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send Message →';
+    });
+  }
 </script>
 </body>
 </html>
